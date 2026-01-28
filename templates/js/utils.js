@@ -286,50 +286,39 @@ const API = {
 
 /**
  * 토스트 메시지 표시
+ * CSS: components.css의 .toast, .toast-container 필요
+ *
  * @param {string} message - 메시지
  * @param {string} type - 타입 ('success' | 'error' | 'warning' | 'info')
  * @param {number} duration - 표시 시간 (ms)
  */
 function showToast(message, type = 'info', duration = CONFIG?.UI?.TOAST_DURATION || 3000) {
-  // 기존 토스트 제거
-  const existing = $('.toast');
-  if (existing) existing.remove();
+  // 토스트 컨테이너 확인/생성
+  let container = $('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    document.body.appendChild(container);
+  }
 
-  // 새 토스트 생성
+  // 토스트 생성 (CSS 클래스만 사용)
   const toast = document.createElement('div');
   toast.className = `toast toast-${type}`;
   toast.textContent = message;
 
-  // 스타일 (인라인 - 별도 CSS가 없을 경우)
-  Object.assign(toast.style, {
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    padding: '12px 24px',
-    borderRadius: '8px',
-    color: 'white',
-    fontWeight: '500',
-    zIndex: '9999',
-    animation: 'fadeIn 0.3s ease',
-    backgroundColor: {
-      success: '#10b981',
-      error: '#ef4444',
-      warning: '#f59e0b',
-      info: '#3b82f6'
-    }[type] || '#3b82f6'
-  });
-
-  document.body.appendChild(toast);
+  container.appendChild(toast);
 
   // 자동 제거
   setTimeout(() => {
-    toast.style.animation = 'fadeOut 0.3s ease';
+    toast.classList.add('toast-exit');
     setTimeout(() => toast.remove(), 300);
   }, duration);
 }
 
 /**
  * 로딩 표시
+ * CSS: components.css의 .loader-overlay, .loader-spinner 필요
+ *
  * @param {boolean} show - 표시 여부
  */
 function showLoading(show = true) {
@@ -339,24 +328,13 @@ function showLoading(show = true) {
     if (!loader) {
       loader = document.createElement('div');
       loader.id = 'global-loader';
-      Object.assign(loader.style, {
-        position: 'fixed',
-        top: '0',
-        left: '0',
-        width: '100%',
-        height: '100%',
-        background: 'rgba(255,255,255,0.8)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        zIndex: '9999'
-      });
-      loader.innerHTML = '<div style="width:40px;height:40px;border:4px solid #e5e7eb;border-top-color:#667eea;border-radius:50%;animation:spin 1s linear infinite;"></div>';
+      loader.className = 'loader-overlay';
+      loader.innerHTML = '<div class="loader-spinner"></div>';
       document.body.appendChild(loader);
     }
-    loader.style.display = 'flex';
+    loader.classList.remove('hidden');
   } else if (loader) {
-    loader.style.display = 'none';
+    loader.classList.add('hidden');
   }
 }
 
@@ -404,21 +382,8 @@ const Validator = {
   }
 };
 
-// ==================== CSS 애니메이션 추가 ====================
-
-const style = document.createElement('style');
-style.textContent = `
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-  @keyframes fadeOut {
-    from { opacity: 1; transform: translateY(0); }
-    to { opacity: 0; transform: translateY(10px); }
-  }
-  @keyframes spin {
-    to { transform: rotate(360deg); }
-  }
-  .hidden { display: none !important; }
-`;
-document.head.appendChild(style);
+/*
+ * 참고: 애니메이션과 .hidden 클래스는
+ * components.css 또는 utilities.css에서 정의됩니다.
+ * JS에서 스타일을 주입하지 않습니다.
+ */

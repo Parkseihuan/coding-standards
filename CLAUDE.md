@@ -1,159 +1,152 @@
 # Claude Code 프로젝트 지침
 
-> 이 파일은 Claude Code가 모든 프로젝트에서 참조하는 글로벌 코딩 표준입니다.
-> 홈 디렉토리(~/.claude/)에 복사하여 사용하세요.
-
-## 기본 원칙
-
-1. **한국어 우선**: 주석, 커밋 메시지, 문서는 한국어로 작성
-2. **단순함 추구**: 과도한 추상화 금지, 필요한 것만 구현
-3. **일관성 유지**: 이 문서의 표준을 따름
+> 이 파일은 Claude Code가 참조하는 글로벌 코딩 표준입니다.
+> ~/.claude/CLAUDE.md에 복사하면 모든 프로젝트에서 자동 적용됩니다.
+>
+> **상세 규칙**: `CODING_STANDARDS.md` 참조
 
 ---
 
-## CSS 표준
+## 핵심 원칙
 
-### 필수 규칙
-- **인라인 스타일 금지** - 모든 스타일은 CSS 파일로 분리
-- **CSS 변수 사용** - `templates/css/variables.css` 참조
-- **BEM 네이밍** 권장 (예: `.card__title`, `.btn--primary`)
+1. **한국어 우선**: 주석, 커밋 메시지, 문서는 한국어
+2. **CSS는 CSS로**: 인라인 스타일 금지, 클래스만 토글
+3. **설정은 한 곳에**: JS는 `CONFIG`, Python은 `settings`
+4. **src/ 구조 강제**: Python은 항상 `src/` 패키지 구조
+
+---
+
+## CSS 규칙
+
+```
+필수:
+- 인라인 스타일 절대 금지
+- CSS 변수 사용 (variables.css)
+- 클래스 기반 스타일링
+
+파일 구조:
+css/
+├── variables.css   # 토큰만 (색상, 간격, 폰트)
+├── base.css        # 리셋, 기본 스타일
+├── components.css  # 버튼, 카드, 토스트 등
+└── utilities.css   # .hidden, .text-*, .flex 등
+```
 
 ### 색상 팔레트
 ```css
---color-primary: #667eea;      /* 메인 브랜드 색상 */
---color-primary-dark: #5a67d8;
---color-secondary: #764ba2;
+--color-primary: #667eea;
 --color-success: #10b981;
 --color-warning: #f59e0b;
 --color-danger: #ef4444;
 ```
 
-### 파일 구조
-```
-css/
-├── variables.css   # CSS 변수 정의
-├── base.css        # 리셋 및 기본 스타일
-├── components.css  # 버튼, 카드, 폼 등
-└── utilities.css   # 유틸리티 클래스
-```
-
 ---
 
-## JavaScript 표준
+## JavaScript 규칙
 
-### 필수 규칙
-- **CONFIG 객체** 사용 - 모든 설정값은 상단에 정의
-- **async/await** 사용 - 콜백 대신 Promise 사용
-- **에러 처리** 필수 - try/catch로 모든 API 호출 감싸기
-
-### 설정 패턴
 ```javascript
+// 설정은 CONFIG 객체로 (freeze 필수)
 const CONFIG = {
-  API: {
-    BASE_URL: 'https://api.example.com',
-    TIMEOUT: 10000,
-    RETRY_COUNT: 3
-  },
-  UI: {
-    DEBOUNCE_DELAY: 300,
-    TOAST_DURATION: 3000
-  }
+  API: { BASE_URL: '...', TIMEOUT: 10000 },
+  UI: { TOAST_DURATION: 3000 }
 };
-```
+Object.freeze(CONFIG);
 
-### API 호출 패턴
-```javascript
-async function fetchWithRetry(url, options = {}, retries = 3) {
-  // templates/js/utils.js 참조
-}
+// 로그는 디버그 모드에서만
+if (CONFIG.FEATURES.DEBUG) console.log(...);
+
+// UI는 클래스 토글만
+element.classList.add('toast', 'toast-success');  // ✓
+element.style.backgroundColor = 'red';             // ✗ 금지
 ```
 
 ---
 
-## Python 백엔드 표준
+## Python 규칙
 
-### 필수 규칙
-- **FastAPI 사용** - Flask 대신 FastAPI 우선
-- **타입 힌트** 필수 - 모든 함수에 타입 명시
-- **pydantic-settings** - 환경 변수 관리
-
-### 프로젝트 구조
 ```
-src/
-├── main.py         # FastAPI 앱 진입점
-├── config.py       # 설정 (pydantic-settings)
-├── api/
-│   ├── routes.py   # API 라우트
-│   └── schemas.py  # Pydantic 스키마
-├── services/       # 비즈니스 로직
-└── utils/          # 유틸리티
+프로젝트 구조 (필수):
+project/
+├── src/
+│   ├── __init__.py
+│   ├── main.py      # FastAPI 앱
+│   ├── config.py    # pydantic-settings
+│   └── api/
+├── tests/
+├── requirements.txt
+├── requirements-dev.txt
+├── pyproject.toml   # ruff, black 설정
+└── .env.example     # 환경 변수 예시
+
+실행:
+uvicorn src.main:app --reload
 ```
 
-### FastAPI 앱 패턴
+### FastAPI 필수 패턴
 ```python
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+# 예외 핸들러는 JSONResponse 사용
+from fastapi.responses import JSONResponse
 
-app = FastAPI(title="앱 이름", version="1.0.0")
+@app.exception_handler(404)
+async def not_found(request: Request, exc) -> JSONResponse:
+    return JSONResponse(status_code=404, content={...})
+```
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+### pydantic-settings (v2)
+```python
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+class Settings(BaseSettings):
+    model_config = SettingsConfigDict(env_file=".env")
 ```
 
 ---
 
-## Git 커밋 규칙
+## 보안 규칙
 
-### 커밋 메시지 형식
+```
+절대 금지:
+- .env 파일 커밋
+- API 키 코드에 하드코딩
+- SECRET_KEY 기본값 그대로 배포
+
+필수:
+- .env.example 생성
+- .gitignore에 .env 포함
+- 배포 전 SECRET_KEY 변경
+```
+
+---
+
+## 린트/포맷터 (기본 적용)
+
+```bash
+# Python
+ruff check .        # 린트
+black .             # 포맷
+
+# JS (선택)
+eslint .
+prettier --write .
+```
+
+---
+
+## Git 커밋
+
 ```
 <타입>: <제목> (한국어)
 
-<본문> (선택사항)
-
-Co-Authored-By: Claude <noreply@anthropic.com>
+타입: feat, fix, docs, style, refactor, test, chore
 ```
 
-### 타입
-- `feat`: 새 기능
-- `fix`: 버그 수정
-- `docs`: 문서 변경
-- `style`: 코드 포맷팅
-- `refactor`: 리팩토링
-- `test`: 테스트 추가
-- `chore`: 기타 변경
-
 ---
 
-## 파일 네이밍
-
-| 종류 | 규칙 | 예시 |
-|------|------|------|
-| HTML | kebab-case | `user-profile.html` |
-| CSS | kebab-case | `variables.css` |
-| JS | camelCase | `userProfile.js` |
-| Python | snake_case | `user_profile.py` |
-| 컴포넌트 | PascalCase | `UserProfile.js` |
-
----
-
-## 프로젝트 시작 체크리스트
+## 체크리스트
 
 새 프로젝트 시작 시:
-- [ ] README.md 생성
-- [ ] .gitignore 설정
-- [ ] CLAUDE.md 복사 (프로젝트 특화 내용 추가)
-- [ ] CSS 변수 파일 복사 (`templates/css/variables.css`)
-- [ ] config 파일 생성 (JS 또는 Python)
-- [ ] .env.example 생성
-
----
-
-## 참고 링크
-
-- 전체 표준 문서: `CODING_STANDARDS.md`
-- 템플릿 파일: `templates/` 디렉토리
-- 코드 스니펫: `snippets/` 디렉토리
+- [ ] `src/` 구조 생성 (Python)
+- [ ] CSS 파일 분리 (인라인 0)
+- [ ] `.env.example` 생성
+- [ ] `pyproject.toml` 설정 (ruff, black)
+- [ ] `.gitignore` 확인

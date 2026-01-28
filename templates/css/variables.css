@@ -166,21 +166,7 @@
   }
 }
 
-/* ==================== 유틸리티 클래스 ==================== */
-
-/* 텍스트 색상 */
-.text-primary { color: var(--color-primary); }
-.text-secondary { color: var(--color-secondary); }
-.text-success { color: var(--color-success); }
-.text-warning { color: var(--color-warning); }
-.text-danger { color: var(--color-danger); }
-.text-muted { color: var(--color-gray-500); }
-
-/* 배경 색상 */
-.bg-primary { background-color: var(--color-primary); }
-.bg-secondary { background-color: var(--color-secondary); }
-.bg-success { background-color: var(--color-success); }
-.bg-warning { background-color: var(--color-warning); }
-.bg-danger { background-color: var(--color-danger); }
-.bg-light { background-color: var(--color-gray-100); }
-.bg-dark { background-color: var(--color-gray-800); }
+/*
+ * 참고: 유틸리티 클래스(.text-*, .bg-*, .hidden 등)는
+ * utilities.css에서 정의됩니다.
+ */

@@ -1,0 +1,59 @@
+[project]
+name = "myapp"
+version = "1.0.0"
+description = "프로젝트 설명"
+requires-python = ">=3.10"
+
+# ==================== Ruff (린트 + import 정리) ====================
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+select = [
+    "E",      # pycodestyle errors
+    "W",      # pycodestyle warnings
+    "F",      # Pyflakes
+    "I",      # isort (import 정리)
+    "B",      # flake8-bugbear
+    "C4",     # flake8-comprehensions
+    "UP",     # pyupgrade
+]
+ignore = [
+    "E501",   # line too long (black이 처리)
+    "B008",   # function call in default argument
+    "B904",   # raise without from
+]
+
+[tool.ruff.isort]
+known-first-party = ["src"]
+
+# ==================== Black (코드 포맷터) ====================
+[tool.black]
+line-length = 100
+target-version = ["py310"]
+include = '\.pyi?$'
+
+# ==================== Pytest ====================
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+addopts = "-v --tb=short"
+
+# ==================== Mypy (타입 체크) ====================
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_ignores = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+# ==================== Coverage ====================
+[tool.coverage.run]
+source = ["src"]
+omit = ["tests/*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "if __name__ == .__main__.:",
+    "raise NotImplementedError",
+]
