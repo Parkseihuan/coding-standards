@@ -1,0 +1,1 @@
+../../ideas/002-monorepo-structure.md
