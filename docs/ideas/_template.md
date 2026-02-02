@@ -1,0 +1,1 @@
+../../ideas/_template.md

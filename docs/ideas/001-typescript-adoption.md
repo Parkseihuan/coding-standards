@@ -1,0 +1,1 @@
+../../ideas/001-typescript-adoption.md
