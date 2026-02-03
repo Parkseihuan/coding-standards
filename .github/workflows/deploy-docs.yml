@@ -34,6 +34,9 @@ jobs:
           # 심볼릭 링크를 실제 파일로 변환 (GitHub Pages 호환)
           cd docs
 
+          # 기존 심볼릭 링크 삭제 후 실제 파일로 복사
+          rm -rf standards decisions ideas CHANGELOG.md RELATIONS.md
+
           # standards 폴더
           mkdir -p standards
           cp ../CODING_STANDARDS.md standards/
