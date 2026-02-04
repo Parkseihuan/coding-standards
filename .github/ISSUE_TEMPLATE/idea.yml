@@ -1,0 +1,69 @@
+name: "💡 아이디어 제안"
+description: "새로운 아이디어나 개선 사항을 제안합니다"
+labels: ["idea", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 새로운 아이디어를 제안해주세요!
+        아래 양식을 작성해주시면 검토 후 반영됩니다.
+
+  - type: input
+    id: title
+    attributes:
+      label: "한 줄 요약"
+      description: "아이디어를 한 문장으로 요약해주세요"
+      placeholder: "예: TypeScript를 기본 언어로 채택"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: category
+    attributes:
+      label: "카테고리"
+      options:
+        - CSS
+        - JavaScript
+        - Python
+        - 프로젝트 구조
+        - 도구/자동화
+        - 문서화
+        - 기타
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "현재 문제점"
+      description: "어떤 문제를 해결하려고 하나요?"
+      placeholder: "현재 JavaScript만 사용하면 타입 안정성이 부족합니다..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "제안하는 해결책"
+      description: "어떻게 해결하면 좋을까요?"
+      placeholder: "TypeScript를 도입하여 타입 체크를 강화합니다..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "대안 (선택)"
+      description: "다른 방법이 있다면 적어주세요"
+      placeholder: "JSDoc 주석으로 타입 힌트만 추가하는 방법도 있습니다..."
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: "우선순위"
+      options:
+        - "🔴 높음 - 당장 필요"
+        - "🟡 중간 - 있으면 좋음"
+        - "🟢 낮음 - 나중에"
+    validations:
+      required: true

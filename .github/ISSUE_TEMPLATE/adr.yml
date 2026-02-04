@@ -1,0 +1,70 @@
+name: "📝 ADR (결정 기록)"
+description: "중요한 아키텍처/설계 결정을 기록합니다"
+labels: ["adr", "decision"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## Architecture Decision Record
+        중요한 결정사항을 기록합니다. 나중에 "왜 이렇게 했지?" 할 때 참고합니다.
+
+  - type: input
+    id: title
+    attributes:
+      label: "결정 제목"
+      description: "무엇을 결정했나요?"
+      placeholder: "예: FastAPI를 기본 웹 프레임워크로 채택"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: status
+    attributes:
+      label: "상태"
+      options:
+        - "제안됨 - 검토 필요"
+        - "수락됨 - 적용 중"
+        - "폐기됨 - 더 이상 사용 안함"
+        - "대체됨 - 새 결정으로 교체"
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: "배경/맥락"
+      description: "왜 이 결정이 필요했나요?"
+      placeholder: "Flask는 비동기 지원이 부족하고, 타입 힌트 활용이 어려웠습니다..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: decision
+    attributes:
+      label: "결정 내용"
+      description: "무엇을 결정했나요?"
+      placeholder: "FastAPI를 기본 웹 프레임워크로 사용합니다. 이유는..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: consequences
+    attributes:
+      label: "결과/영향"
+      description: "이 결정으로 인한 긍정적/부정적 영향"
+      placeholder: |
+        긍정적:
+        - 비동기 처리 가능
+        - 자동 API 문서 생성
+
+        부정적:
+        - 학습 곡선 존재
+    validations:
+      required: true
+
+  - type: input
+    id: related
+    attributes:
+      label: "관련 이슈/ADR (선택)"
+      description: "관련된 다른 이슈 번호"
+      placeholder: "#1, #5"
